@@ -1,0 +1,10 @@
+criar rotas de conversas conversa atrelada a cada cliente
+
+tres rotas principais (agente_menu)
+1 iniciar conversa
+2 confirmar cadastro
+3 continuar conversa
+
+tabelas no banco
+cliente (dados de cadastro)
+conversas (registro das conversas)
