@@ -1,10 +1,229 @@
-criar rotas de conversas conversa atrelada a cada cliente
+1. Agente Menu
 
-tres rotas principais (agente_menu)
-1 iniciar conversa
-2 confirmar cadastro
-3 continuar conversa
+Responsabilidade
 
-tabelas no banco
-cliente (dados de cadastro)
-conversas (registro das conversas)
+* Iniciar conversa
+* Verificar cadastro
+* Cadastrar usuário
+* Direcionar para o agente correto
+
+Backend
+
+* Consultar PostgreSQL
+* Criar usuário
+* Gerar JWT
+* Chamar o Orquestrador
+
+Não utiliza LLM para tomar decisões de negócio.
+
+⸻
+
+2. Agente Orquestrador
+
+Esse é o agente mais importante.
+
+Ele recebe toda mensagem do usuário.
+O Orquestrador identifica:
+
+Essa tarefa pertence ao agente Backend.
+
+Então encaminha a solicitação.
+
+Responsabilidade
+
+* Receber todas as mensagens
+* Escolher qual agente executar
+* Enviar contexto
+* Receber respostas
+* Unificar resposta final
+
+Backend
+
+* Chamada ao LLM
+* Escolha do agente
+* Recuperação de memória
+* Registro de logs
+
+⸻
+
+3. Agente Desenvolvedor Backend
+
+Especialista em:
+
+* Python
+* FastAPI
+* PostgreSQL
+* SQL
+* APIs
+* Docker
+
+Responsabilidade
+
+Gerar:
+
+* CRUD
+* APIs
+* SQL
+* Arquitetura
+
+Backend
+
+Recebe do Orquestrador
+
+↓
+
+Monta Prompt
+
+↓
+
+OpenAI
+
+↓
+
+Recebe resposta
+
+↓
+
+Salva histórico
+
+⸻
+
+4. Agente Desenvolvedor Frontend
+
+Especialista em
+
+* React
+* HTML
+* CSS
+* JavaScript
+
+Responsável por gerar interfaces.
+
+⸻
+
+5. Agente Banco de Dados
+
+Especialista em
+
+* PostgreSQL
+* Modelagem
+* SQL
+* Índices
+* Performance
+
+Pode responder:
+
+Crie uma tabela.
+
+Faça uma migration.
+
+Otimize essa consulta.
+
+⸻
+
+6. Agente Documentação
+
+Especialista em
+
+* Markdown
+* Swagger
+* README
+* Documentação técnica
+
+Gera documentação automaticamente.
+
+⸻
+
+7. Agente QA/Testes
+
+Especialista em
+
+* Testes unitários
+* Testes de integração
+* Pytest
+
+Pode criar testes para o código produzido.
+
+⸻
+
+8. Agente Conhecimento
+
+Esse agente atende outro requisito do documento:
+
+Integração com bases de conhecimento.
+
+Ele consulta:
+
+* PDFs
+* Wiki interna
+* Banco
+* Documentação
+
+Antes de enviar perguntas ao LLM.
+
+Esse agente pode implementar um fluxo de RAG (Retrieval-Augmented Generation), recuperando documentos relevantes e incluindo-os no contexto enviado ao modelo.
+
+⸻
+
+9. Agente Memória
+
+O documento também pede gestão de contexto e memória.
+
+Esse agente controla:
+
+* Histórico da conversa
+* Projetos
+* Preferências
+* Contexto
+
+Por exemplo:
+
+Usuário
+
+Continue o CRUD.
+
+O agente recupera:
+
+* conversa anterior
+* código salvo
+* projeto atual
+
+e envia tudo para o LLM.
+
+⸻
+
+10. Agente Métricas
+
+Responsável por registrar:
+
+* tempo de execução
+* quantidade de chamadas
+* consumo de tokens
+* erros
+* produtividade
+
+Esses dados alimentam o painel solicitado no desafio.
+
+Frontend
+↓
+POST /chat
+↓
+Orquestrador
+↓
+Consulta Memória
+↓
+Consulta Base de Conhecimento
+↓
+Escolhe Agente
+↓
+Monta Prompt
+↓
+OpenAI
+↓
+Recebe Resposta
+↓
+Salva Histórico
+↓
+Atualiza Métricas
+↓
+Retorna JSON

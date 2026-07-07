@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from controlador_agente_menu import router as agente_menu_router
+from controlador.controlador_agente_menu import router as agente_menu_router
 
 app = FastAPI()
 

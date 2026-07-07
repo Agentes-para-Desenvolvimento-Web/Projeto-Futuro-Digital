@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from agente_menu import Agente_Menu
+from classe.agente_menu import Agente_Menu
 from sqlalchemy import create_engine, text
 import requests
 import json
@@ -12,7 +12,7 @@ apikey = os.getenv("GEMINI_API_KEY")
 
 router = APIRouter(prefix="/menu", tags=["Agente_Menu"])
 
-@router.get("/")
+@router.get("/confirmar_usuário")
 def confirmar_usuário(menu: Agente_Menu):
 
     engine = create_engine(DATABASE_URL)
@@ -22,12 +22,12 @@ def confirmar_usuário(menu: Agente_Menu):
 
             sql = """
                 SELECT * FROM public.clientes
-                WHERE nome_cliente = :nome_cliente AND cpf = :cpf
+                WHERE cpf = :cpf AND nome_cliente = :nome_cliente
                   """   
                      
             dados = {
-                "nome_cliente" : menu.nome_cliente,
-                "cpf" : menu.cpf
+                "cpf" : menu.cpf,
+                "nome_cliente" : menu.nome_cliente
             }
 
             result = con.execute(text(sql), dados)
@@ -37,17 +37,13 @@ def confirmar_usuário(menu: Agente_Menu):
             engine.dispose()
 
             if cliente:
-                print (f"Cliente encontrado: {cliente}")
+                return {"Usuário encontrado. Como posso te ajudar hoje?"}
             
             else:
-                print("Cliente não encontrado.")
+                return {"Usuário não encontrado. Deseja se cadastrar?"}
 
     except Exception as e:
         print(f"Erro ao consultar o banco de dados: {e}")
-
-    nome = agente_menu.nome_cliente
-
-    cpf = agente_menu.cpf
 
     url = ''
 
@@ -89,3 +85,37 @@ def confirmar_usuário(menu: Agente_Menu):
     texto = resultado['steps'][1]['content'][0]['text']
 
     return json.loads(texto)
+
+@router.post('/cadastrar_cliente')
+def cadastrar(menu: Agente_Menu):
+
+    engine = create_engine(DATABASE_URL)
+    
+    try:
+        with engine.begin() as con:
+            sql = """
+                INSERT INTO public.clientes (nome_cliente, email, cidade, cpf, numero_contato, bairro, estado, cep, logradouro, complemento)
+                VALUES ( :nome_cliente, :email, :cidade, :cpf, :numero_contato, :bairro, :estado, :cep, :logradouro, :complemento)
+                  """
+                        
+            dados = {
+                "nome_cliente" : menu.nome_cliente,
+                "email": menu.email,
+                "cidade": menu.cidade,
+                "cpf": menu.cpf,
+                "numero_contato": menu.numero_contato,
+                "bairro": menu.bairro,
+                "estado": menu.estado,
+                "cep": menu.cep,
+                "logradouro": menu.logradouro,
+                "complemento": menu.complemento
+            }
+
+            con.execute(text(sql), dados)
+
+            engine.dispose()
+
+            return {"Cliente cadastrado com sucesso."}
+
+    except Exception as e:
+        return e
