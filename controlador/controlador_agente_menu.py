@@ -17,6 +17,8 @@ def confirmar_usuário(menu: Agente_Menu):
 
     engine = create_engine(DATABASE_URL)
 
+    usuario_existe = False
+
     try:
         with engine.begin() as con:
 
@@ -36,11 +38,9 @@ def confirmar_usuário(menu: Agente_Menu):
 
             engine.dispose()
 
+            #do jeito que tava antes a função encerrava antes do resto do código ser executado. Só nao sei onde usar agora :(
             if cliente:
-                return {"Usuário encontrado. Como posso te ajudar hoje?"}
-            
-            else:
-                return {"Usuário não encontrado. Deseja se cadastrar?"}
+                usuario_existe = True  
 
     except Exception as e:
         print(f"Erro ao consultar o banco de dados: {e}")
