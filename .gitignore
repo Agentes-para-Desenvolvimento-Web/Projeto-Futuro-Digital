@@ -1,5 +1,5 @@
 # Caches e arquivos compilados
-__pycache__
+__pycache__/
 *.py[cod]
 *$py.class
 
@@ -26,19 +26,21 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Ambientes Virtuais (RECOMENDADO IGNORAR)
-.env
-.venv
-env/
+# Ambientes Virtuais
+.venv/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
 
 # Arquivos de configuração pessoal / Segredos
+.env
 .env.local
 .env.*.local
-$*.env
+
+# Banco de dados Docker (Importante para não subir lixo para o Git)
+pgdata/
 
 # Relatórios de testes e cobertura de código
 htmlcov/
@@ -58,11 +60,11 @@ coverage.xml
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Configurações do VS Code e PyCharm (Opcional, mas útil)
+# Configurações do VS Code e PyCharm
 .vscode/
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.swp
