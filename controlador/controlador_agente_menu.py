@@ -23,8 +23,8 @@ def confirmar_usuário(menu: Agente_Menu):
             sql = """
                 SELECT * FROM public.clientes
                 WHERE cpf = :cpf AND nome_cliente = :nome_cliente
-                  """   
-                     
+                  """
+
             dados = {
                 "cpf" : menu.cpf,
                 "nome_cliente" : menu.nome_cliente
@@ -38,7 +38,7 @@ def confirmar_usuário(menu: Agente_Menu):
 
             if cliente:
                 return {"Usuário encontrado. Como posso te ajudar hoje?"}
-            
+
             else:
                 return {"Usuário não encontrado. Deseja se cadastrar?"}
 
@@ -90,14 +90,14 @@ def confirmar_usuário(menu: Agente_Menu):
 def cadastrar(menu: Agente_Menu):
 
     engine = create_engine(DATABASE_URL)
-    
+
     try:
         with engine.begin() as con:
             sql = """
                 INSERT INTO public.clientes (nome_cliente, email, cidade, cpf, numero_contato, bairro, estado, cep, logradouro, complemento)
                 VALUES ( :nome_cliente, :email, :cidade, :cpf, :numero_contato, :bairro, :estado, :cep, :logradouro, :complemento)
                   """
-                        
+
             dados = {
                 "nome_cliente" : menu.nome_cliente,
                 "email": menu.email,
@@ -119,3 +119,4 @@ def cadastrar(menu: Agente_Menu):
 
     except Exception as e:
         return e
+
