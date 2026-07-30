@@ -1,23 +1,20 @@
-from app.config import settings
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
+import os
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import declarative_base
+load_dotenv()
 
+engine = create_engine(os.getenv("DATABASE_URL"))
 
+try:
+    with open("db.sql", encoding="utf-8") as sql:
+        create_db = sql.read()
 
-engine = create_async_engine(
-    settings.DATABASE_URL
-)
+    with engine.begin() as con:
+        con.execute(text("DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"))
+        con.execute(text(create_db))
+        print("Foi")
+    engine.dispose()
 
-SessionLocal = async_sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
-
-Base = declarative_base()
-
-
-async def get_db():
-    async with SessionLocal() as db:
-        yield db
+except Exception as e:
+    print(e)
