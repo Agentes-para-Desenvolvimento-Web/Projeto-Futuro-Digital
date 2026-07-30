@@ -12,9 +12,31 @@ apikey = os.getenv("GEMINI_API_KEY")
 
 router = APIRouter(prefix="/menu", tags=["Agente_Menu"])
 
+@router.post("/novo_usuário")
+def novo_usuário(menu: Agente_Menu):
+    engine = create_engine(DATABASE_URL)
+
+    try:
+        with engine.begin() as con:
+            sql = """
+                INSERT INTO public.clientes (nome_cliente, cpf, email)
+                  """ 
+                       
+            dados = {
+                "nome_cliente" : menu.nome_cliente,
+                "cpf" : menu.cpf,
+                "email" : menu.email
+            }
+
+            con.execute(text(sql), dados)
+
+            engine.dispose()
+
+    except Exception as e:
+        return e
+
 @router.get("/confirmar_usuário")
 def confirmar_usuário(menu: Agente_Menu):
-
     engine = create_engine(DATABASE_URL)
 
     try:
@@ -45,7 +67,55 @@ def confirmar_usuário(menu: Agente_Menu):
     except Exception as e:
         print(f"Erro ao consultar o banco de dados: {e}")
 
-    url = ''
+@router.post("/mensagem_usuario")
+def mensagem_usuario(menu: Agente_Menu):
+
+    engine = create_engine(DATABASE_URL)
+
+    try:
+        with engine.begin() as con:
+            sql = """
+                INSERT INTO public.mensagens (mensagem_usuario)
+                VALUES ( :mensagem_usuario)
+                WHERE id = :cliente_id
+                  """ 
+                       
+            dados = {
+                "mensagem_usuario" : menu.mensagem
+            }
+
+            con.execute(text(sql), dados)
+
+            engine.dispose()
+
+    except Exception as e:
+        return e
+
+@router.post("/resposta_agente_menu")
+def resposta(menu: Agente_Menu):
+
+    engine = create_engine(DATABASE_URL)
+
+    try:
+        with engine.begin() as con:
+            sql = """
+                INSERT INTO public.mensagens (resposta)
+                VALUES ( :resposta)
+                WHERE id = :cliente_id
+                  """ 
+                       
+            dados = {
+                "resposta" : menu.mensagem
+            }
+
+            con.execute(text(sql), dados)
+
+            engine.dispose()
+
+    except Exception as e:
+        return e
+
+    url = 'https://generativelanguage.googleapis.com/v1beta/interactions'
 
     headers = {
         'Content-Type': 'application/json',
@@ -54,7 +124,7 @@ def confirmar_usuário(menu: Agente_Menu):
 
     data = {
         "model": "gemini-3.1-flash-lite",
-        "input": '''Você é o Agente Menu de um Ecossistema de Agentes de IA.Sua função é identificar o usuário, verificar se ele já possui cadastro e direcioná-lo para o fluxo correto. Você não responde perguntas técnicas nem executa tarefas dos demais agentes.
+        "input": '''Você é o Agente Menu de um Ecossistema de Agentes de IA. Sua função é identificar o usuário, verificar se ele já possui cadastro e direcioná-lo para o fluxo correto. Você não responde perguntas técnicas nem executa tarefas dos demais agentes.
                     Objetivos: Receber as informações do usuário. Verificar se ele está cadastrado utilizando a ferramenta/API disponibilizada pelo sistema. Direcionar o usuário conforme o resultado da verificação.
                     Regras: Nunca assuma que um usuário está cadastrado. Sempre utilize a ferramenta de verificação de cadastro antes de decidir o fluxo. Nunca invente informações sobre usuários. Caso ocorra erro na consulta, informe que não foi possível verificar o cadastro no momento. Seja educado, objetivo e profissional.
                     Fluxo de decisão:
@@ -85,37 +155,3 @@ def confirmar_usuário(menu: Agente_Menu):
     texto = resultado['steps'][1]['content'][0]['text']
 
     return json.loads(texto)
-
-@router.post('/cadastrar_cliente')
-def cadastrar(menu: Agente_Menu):
-
-    engine = create_engine(DATABASE_URL)
-    
-    try:
-        with engine.begin() as con:
-            sql = """
-                INSERT INTO public.clientes (nome_cliente, email, cidade, cpf, numero_contato, bairro, estado, cep, logradouro, complemento)
-                VALUES ( :nome_cliente, :email, :cidade, :cpf, :numero_contato, :bairro, :estado, :cep, :logradouro, :complemento)
-                  """
-                        
-            dados = {
-                "nome_cliente" : menu.nome_cliente,
-                "email": menu.email,
-                "cidade": menu.cidade,
-                "cpf": menu.cpf,
-                "numero_contato": menu.numero_contato,
-                "bairro": menu.bairro,
-                "estado": menu.estado,
-                "cep": menu.cep,
-                "logradouro": menu.logradouro,
-                "complemento": menu.complemento
-            }
-
-            con.execute(text(sql), dados)
-
-            engine.dispose()
-
-            return {"Cliente cadastrado com sucesso."}
-
-    except Exception as e:
-        return e
