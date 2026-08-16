@@ -28,6 +28,7 @@ CREATE TABLE public.cliente (
 CREATE TABLE public.chat (
 	id serial NOT NULL,
 	agente_id INT,
+	cliente_id INT,
 	data_inicio timestamp NULL DEFAULT CURRENT_DATE,
 	CONSTRAINT chat_pk PRIMARY KEY (id),
 	CONSTRAINT agente_id FOREIGN KEY (agente_id) REFERENCES public.agente(id) ON UPDATE CASCADE,
