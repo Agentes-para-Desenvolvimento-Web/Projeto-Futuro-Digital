@@ -12,13 +12,13 @@ apikey = os.getenv("GEMINI_API_KEY")
 
 router = APIRouter(prefix="/menu", tags=["Agente_Menu"])
 
-@router.get("/confirmar_usuário")
-def confirmar_usuário(menu: Agente_Menu):
+@router.get("/confirmar_usuario")
+def confirmar_usuario(menu: Agente_Menu):
 
     engine = create_engine(DATABASE_URL)
 
     try:
-        with engine.begin() as con:
+        with engine.connect() as con:
 
             sql = """
                 SELECT * FROM public.clientes
